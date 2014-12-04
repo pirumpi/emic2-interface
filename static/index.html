@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html ng-app="emic2">
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.css" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.2/themes/excite-bike/jquery-ui.css"/>
+    <style>
+      body{ color: white; background: rgb(17, 17, 17); }
+      .control-panel { margin-left: auto; margin-right: auto; position: relative; width: 500px; height: 400px; padding: 10px; background: url(http://www.tightflash.org/MrQuicksclass/journal_blog/wp-content/uploads/2013/11/Sound_WaveXXL.jpg) no-repeat; background-size: cover; }
+      .c-1{ left: 10px; }
+      .c-2{ left: 50px; }
+      .controls{ position: absolute; width: 35px; height: 350px; top: 35px; margin: 10px; padding: 34px 10px 34px 10px; }
+      [ui-slider]{  height: 100%; }
+      .controls .bottom{ position: absolute; bottom: 5px; }
+      .controls .top{ position: absolute; top: 5px; }
+      .title{ width: 100%;  text-align: center; color: white; font-weight: bolder; font-size: 25px;}
+      .voices{ position: absolute; top: 50px; width: 350px; left: 120px; }
+      .message{ position: absolute; width: 350px; top: 140px; left: 120px; }
+      .language{ position: absolute; width: 350px; top: 95px; left: 120px; }
+      .message button{ margin-top: 10px; width: 100px; }
+      .glyphicon{ color: white; }
+      .bk{ color: black; }
+      textarea, select { background-color: rgba(255,255,255,0.3) !important; color: white !important;}
+      .ui-slider .ui-slider-vertical {  height: 100%; }
+    </style>
+  </head>
+  <body ng-controller="MainCtrl">
+    <form class="control-panel" ng-submit="playFn()">
+      <div class="title">Emic 2 Module</div>
+      <div class="controls c-1">
+        <div ui-slider="rateOptions" ng-model="controls.rate" min="75"  max="600"></div>
+        <div class="top"><i class="glyphicon glyphicon-forward"></i></div>
+        <div class="bottom"><i class="glyphicon glyphicon-backward"></i></div>
+      </div>
+      <div class="controls c-2">
+        <div ui-slider="volOptions" ng-model="controls.vol" min="-48" max="18"></div> 
+        <div class="top"><i class="glyphicon glyphicon-volume-up"></i></div>
+        <div class="bottom"><i class="glyphicon glyphicon-volume-down"></i></div> 
+      </div> 
+      <div class="voices form-group"> 
+        <div class="input-group">
+          <div class="input-group-addon"><i class="bk glyphicon glyphicon-bullhorn"></i></div>
+          <select ng-model="controls.voice" class="form-control" ng-options="v.name for v in voices" ng-change="voiceFn()"></select> 
+        </div>
+      </div>
+      <div class="language form-group"> 
+        <div class="input-group">
+          <div class="input-group-addon"><i class="bk glyphicon glyphicon-globe"></i></div>
+          <select ng-model="controls.lan" class="form-control" ng-options="l.name for l in languages" ng-change="lanFn()"></select> 
+        </div>
+      </div>
+      <div class="message">
+        <textarea class="form-control" rows="9" ng-model="controls.message"></textarea>
+        <button class="pull-right btn btn-primary btn-lg"><i class="glyphicon glyphicon-play"></i></button>
+      </div>
+    </form>
+  <p>{{controls}}</p>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.4/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+    <script src="http://angular-ui.github.io/ui-slider/src/slider.js"></script>
+    <script>
+      var app = angular.module('emic2', ['ui.slider'])
+      .factory('emic2', function($http){
+        return {
+          set: function(action, val){
+            $http.get('/' + action + '/' + val ); 
+          }
+        };
+      })
+      .controller('MainCtrl', function($scope, emic2){
+        $scope.voices = [{name:'Perfect Paul', val:0},{name: 'Huge Harry', val:1},{name: 'Beautiful Betty', val:2},{name:'Uppity Ursula', val:3},{name: 'Doctor Dennis', val:4},{name:'Kit the Kid', val:5},{name:'Frail Frank', val:6},{name:'Rough Rita', val:7},{name:'Whispering Wendy', val:8}];
+        $scope.languages = [{name: 'English', val:'en'}, {name:'Spanish', val:'es'}];
+        $scope.controls = { vol: 10, rate: 200, voice: $scope.voices[0], lan: $scope.languages[0], message: '' };
+        $scope.rateOptions = {
+          orientation: 'vertical',
+          stop: function(){ emic2.set('rate', $scope.controls.rate); }
+        };
+        $scope.volOptions = {
+          orientation: 'vertical',
+          stop: function(){ emic2.set('volume',$scope.controls.vol); }
+        };
+        $scope.voiceFn = function(){ emic2.set('voice', $scope.controls.voice.val); };
+        $scope.lanFn = function() { emic2.set('language', $scope.controls.lan.val) }
+        $scope.playFn = function(){
+          emic2.set('message', $scope.controls.message);
+          $scope.controls.message = '';
+        };
+      });
+    </script>  
+  </body>
+</html>
