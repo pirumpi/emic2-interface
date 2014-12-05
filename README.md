@@ -39,7 +39,7 @@ This is my first attent to create a Tessel module utilizing simple components fr
 ```bash
     git clone https://github.com/pirumpi/emic2-interface.git
     npm install //Install dependencies 
-    node app.js //run app
+    tessel push app.js //run app
 ```
 ### Code Preview
 ```js
